@@ -1,11 +1,11 @@
 fetch('http://localhost:3000/api/products')
     .then(response => response.json())
     .then(data => {
-        allProducts(data);
+        showAllProducts(data);
     })
 
 
-function allProducts(data) {
+function showAllProducts(data) {
     for (data of data) {
         let display = document.querySelector('#items');
         display.innerHTML +=
