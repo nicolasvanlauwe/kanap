@@ -35,13 +35,8 @@ function showProduct(data) {
 }
 
 // Fonction pour le panier
-let checkQuantity = document.getElementById('quantity').value;
-
-
 function saveCart(product) {
-
     localStorage.setItem("cart", JSON.stringify(product));
-
 }
 
 function getCart() {
@@ -55,18 +50,16 @@ function getCart() {
 }
 
 function addCart(product) {
-    // Verification de la quantité
+    // Verification de la quantité et de la couleur
     let checkQuantity = parseInt(document.getElementById('quantity').value);
     let chosenColor = document.getElementById('colors').value;
     if (checkQuantity == 0 || !chosenColor) {
         alert("Vous devez choisir une couleur et une quantité.")
-    } else {
+    }
+    // On travaille sur le localStorage apres verification
+    else {
         let cart = getCart();
-        let searchProduct = cart.find(p => p._id == product._id);
-        // console.log(searchProduct)
-        // console.log(searchProduct.colors == chosenColor)
-        // console.log("couleur produit cherche" + searchProduct.colors)
-        // console.log("couleur choisi" + chosenColor)
+        //petit check afin de ne pas modifier tous les produits a cause de la boucle
         let check = false
         for (p of cart) {
             if (product._id == p._id && chosenColor == p.colors && !check) {
@@ -83,7 +76,6 @@ function addCart(product) {
         }
         saveCart(cart);
     }
-
 
 }
 
