@@ -19,6 +19,8 @@ let displayColors = document.querySelector('#colors');
 
 function showProduct(data) {
 
+    document.title = data.name;
+
     displayImg.innerHTML +=
         `<img src="${data.imageUrl}" alt="${data.altTxt}">`;
 
@@ -75,6 +77,7 @@ function addCart(product) {
             cart.push(product);
         }
         saveCart(cart);
+        alert("Votre produit a été ajouté !")
     }
 
 }
