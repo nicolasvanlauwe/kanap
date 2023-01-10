@@ -1,11 +1,5 @@
+let param = new URLSearchParams(window.location.search);
 
-// let validBtn = document.getElementById('order')
-// validBtn.addEventListener("click", () => {
-    
+document.getElementById('orderId').innerHTML = param.get('orderId');
 
-
-//     // fetch('http://localhost:3000/api/products', {
-//     //     method: 'POST',
-//     //     body: JSON.stringify(infoForm)
-//     // })
-// })
+window.localStorage.clear();

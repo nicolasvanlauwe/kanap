@@ -90,7 +90,6 @@ fetch('http://localhost:3000/api/products')
     }
 
     //Verification du formulaire
-
     function testForm(str, reg, locMsg, msg) {
       str.addEventListener('input', () => {
         if (!reg.test(str.value)) {
@@ -101,6 +100,7 @@ fetch('http://localhost:3000/api/products')
         }
       })
     }
+
     let validBtn = document.getElementById('order')
     let firstName = document.getElementById('firstName')
     let lastName = document.getElementById('lastName')
@@ -118,35 +118,48 @@ fetch('http://localhost:3000/api/products')
     testForm(email, emailReg, 'emailErrorMsg', "L'adresse mail n'est pas conforme");
 
     validBtn.addEventListener("click", (event) => {
-      // firstName.addEventListener('input', () => {
-      //   if (nameReg.test(firstName.value) == false) {
-      //     document.getElementById('firstNameErrorMsg').textContent = "Vous ne pouvez pas utilisez de caractères spéciaux"
-      //   }
-      //   else {
-      //     document.getElementById('firstNameErrorMsg').textContent = ""
-      //   }
-      // })
-
+      let cart = getCart();
       if (!nameReg.test(firstName.value) ||
         !nameReg.test(lastName.value) ||
         !addressReg.test(address.value) ||
-        !nameReg.test(city.value)) {
+        !nameReg.test(city.value) ||
+        cart.length == 0) {
         event.preventDefault();
+        alert('Les champs du formulaire sont incorrects ou votre panier est vide')
       }
 
       else {
-        let infoForm = {
-          firstName: firstName.value,
-          lastName: lastName.value,
-          address: address.value,
-          city: city.value,
-          email: email.value
+        let cartConfirm = [];
+        for (p of cart) {
+          cartConfirm.push(p._id);
+          console.log(p._id)
         }
+        let order = {
+          //données form
+          infoForm: {
+            firstName: firstName.value,
+            lastName: lastName.value,
+            address: address.value,
+            city: city.value,
+            email: email.value
+          },
+          //données panier
+          infoCart: cartConfirm
+        }
+        console.log(order)
         fetch('http://localhost:3000/api/products/order', {
           method: 'POST',
-          body: JSON.stringify(infoForm)
+          body: JSON.stringify(order),
+          headers: {
+            Accept: 'application/json',
+            'Content-type': 'application/json',
+          }
         })
-
+          .then((response) => response.json())
+          .then((data) => {
+            let orderId = data.orderId
+            window.location.href = "confirmation.html" + "?orderId=" + orderId
+          })
       }
     })
   })
