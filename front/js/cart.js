@@ -91,11 +91,62 @@ fetch('http://localhost:3000/api/products')
 
     //Verification du formulaire
 
+    function testForm(str, reg, locMsg, msg) {
+      str.addEventListener('input', () => {
+        if (!reg.test(str.value)) {
+          document.getElementById(locMsg).textContent = msg
+        }
+        else {
+          document.getElementById(locMsg).textContent = ""
+        }
+      })
+    }
     let validBtn = document.getElementById('order')
+    let firstName = document.getElementById('firstName')
+    let lastName = document.getElementById('lastName')
+    let address = document.getElementById('address')
+    let city = document.getElementById('city')
+    let email = document.getElementById('email')
+
+    let nameReg = new RegExp(/^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$/);
+    let addressReg = new RegExp(/^[0-9 A-Za-z'-]{1,40}$/);
+    let emailReg = new RegExp(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-z]{2,3})$/);
+    testForm(firstName, nameReg, 'firstNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
+    testForm(lastName, nameReg, 'lastNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
+    testForm(address, addressReg, 'addressErrorMsg', "L'adresse n'est pas conforme");
+    testForm(city, nameReg, 'cityErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
+    testForm(email, emailReg, 'emailErrorMsg', "L'adresse mail n'est pas conforme");
+
     validBtn.addEventListener("click", (event) => {
-      if (!isNaN(document.getElementById('firstName').value) || !isNaN(document.getElementById('lastName').value)) {
+      // firstName.addEventListener('input', () => {
+      //   if (nameReg.test(firstName.value) == false) {
+      //     document.getElementById('firstNameErrorMsg').textContent = "Vous ne pouvez pas utilisez de caractères spéciaux"
+      //   }
+      //   else {
+      //     document.getElementById('firstNameErrorMsg').textContent = ""
+      //   }
+      // })
+
+      if (!nameReg.test(firstName.value) ||
+        !nameReg.test(lastName.value) ||
+        !addressReg.test(address.value) ||
+        !nameReg.test(city.value)) {
         event.preventDefault();
-        alert("Veuillez entrer un nom et prénom valide.")
+      }
+
+      else {
+        let infoForm = {
+          firstName: firstName.value,
+          lastName: lastName.value,
+          address: address.value,
+          city: city.value,
+          email: email.value
+        }
+        fetch('http://localhost:3000/api/products/order', {
+          method: 'POST',
+          body: JSON.stringify(infoForm)
+        })
+
       }
     })
   })
