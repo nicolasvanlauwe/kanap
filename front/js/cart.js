@@ -136,7 +136,7 @@ fetch('http://localhost:3000/api/products')
         }
         let order = {
           //données form
-          infoForm: {
+          contact: {
             firstName: firstName.value,
             lastName: lastName.value,
             address: address.value,
@@ -144,7 +144,7 @@ fetch('http://localhost:3000/api/products')
             email: email.value
           },
           //données panier
-          infoCart: cartConfirm
+          products: cartConfirm
         }
         console.log(order)
         fetch('http://localhost:3000/api/products/order', {
