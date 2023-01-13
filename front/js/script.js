@@ -1,3 +1,4 @@
+let display = document.querySelector('#items');
 //Contact de l'API
 fetch('http://localhost:3000/api/products')
     .then(response => response.json())
@@ -5,12 +6,15 @@ fetch('http://localhost:3000/api/products')
         // Appel de la fonction avec comme paramètre le contenu de l'API
         showAllProducts(data);
     })
+    .catch(() => {
+        display.innerHTML += "<h1>Problème avec l'API</h1>"
+    })
 
 
 function showAllProducts(data) {
     //On parcourt et on ajoute au fur et à mesure
     for (d of data) {
-        let display = document.querySelector('#items');
+
         display.innerHTML +=
             `<a href="./product.html?id=${d._id}">
         <article>
