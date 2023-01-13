@@ -1,3 +1,4 @@
+//Je ressort mes fonctions du panier 
 function getCart() {
   let cart = localStorage.getItem("cart");
   if (cart == null) {
@@ -13,22 +14,24 @@ function saveCart(product) {
 }
 
 let cart = getCart();
+//On travaille sur le HTML que l'on va afficher
 let displayCart = document.querySelector('#cart__items');
 let displayTotalQuantity = document.querySelector('#totalQuantity');
 let displayTotalPrice = document.querySelector('#totalPrice');
 let totQuantity = 0;
 let totPrice = 0;
 
+//J'appelle mon API pour retrouver les prix
 fetch('http://localhost:3000/api/products')
   .then(response => response.json())
   .then(data => {
 
     //exploration du localStorage
     for (p of cart) {
-      //on recherche le prix dans l'api
       let price;
       //exploration de l'api pour trouver le prix de l'article
       for (o of data) {
+        //Si les ids correspondent alors on a le prix
         if (o._id == p._id) {
           price = o.price
         }
@@ -54,42 +57,58 @@ fetch('http://localhost:3000/api/products')
       </div>
     </div>
   </article>`
+      //Incrémentation de mon total pour le prix et pour la quantité
       totQuantity += p.quantity;
       totPrice += price * p.quantity;
     }
+    //On affiche après la boucle les totaux
     displayTotalQuantity.innerHTML += totQuantity;
     displayTotalPrice.innerHTML += totPrice;
 
-    //changement de quantité
-
+    //Travail sur le changement de quantité
     let inputQuantity = document.querySelectorAll('.itemQuantity');
     for (let i = 0; i < inputQuantity.length; i++) {
+      //Dés qu'on détecte un changement
       inputQuantity[i].addEventListener('change', () => {
         let cart = getCart();
-        cart[i].quantity = inputQuantity[i].value
-        saveCart(cart);
-        window.location.href = "cart.html"
-        alert("La quantité a bien été changé !")
+        //Si on a mit la quantité à 0 alors on supprime le produit
+        if (inputQuantity[i].value == 0) {
+          cart.splice(i, 1);
+          saveCart(cart);
+          window.location.href = "cart.html"
+          alert("Le produit a bien été supprimé !")
+        }
+        //On check tjrs que les quantités sont dans les normes
+        else if (inputQuantity[i].value < 0 || inputQuantity[i].value > 100) {
+          alert("Veuillez commandez une quantité entre 1 et 100.")
+        }
+        //Si tout est ok on actualise la quantité et on refresh la page 
+        else {
+          cart[i].quantity = inputQuantity[i].value
+          saveCart(cart);
+          window.location.href = "cart.html"
+          alert("La quantité a bien été changé !")
+        }
       })
     }
 
 
-    //suppression d'un article
-
+    //Travail sur la suppression d'un article
     let deleteBtn = document.querySelectorAll('.deleteItem');
 
     for (let l = 0; l < deleteBtn.length; l++) {
       deleteBtn[l].addEventListener('click', () => {
         let cart = getCart();
-        let deleteId = cart[l]._id;
-        cart = cart.filter((f) => f._id !== deleteId)
+        //La posistion du btn supprimer est lié au produit donc on supprime à l
+        cart.splice(l, 1);
+        //On enregistre et on refresh
         saveCart(cart);
         window.location.href = "cart.html"
         alert("Votre produit a été supprimé !")
       })
     }
 
-    //Verification du formulaire
+    //Fonction pour tester la conformité des champs du formulaire
     function testForm(str, reg, locMsg, msg) {
       str.addEventListener('input', () => {
         if (!reg.test(str.value)) {
@@ -102,37 +121,48 @@ fetch('http://localhost:3000/api/products')
     }
 
     let validBtn = document.getElementById('order')
+
+    //Les champs à tester
     let firstName = document.getElementById('firstName')
     let lastName = document.getElementById('lastName')
     let address = document.getElementById('address')
     let city = document.getElementById('city')
     let email = document.getElementById('email')
 
+    //Les regexp pour tester
     let nameReg = new RegExp(/^[a-zA-Zàâäéèêëïîôöùûüç ,.'-]+$/);
     let addressReg = new RegExp(/^[0-9 A-Za-z'-]{1,40}$/);
     let emailReg = new RegExp(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-z]{2,3})$/);
+
     testForm(firstName, nameReg, 'firstNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
     testForm(lastName, nameReg, 'lastNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
     testForm(address, addressReg, 'addressErrorMsg', "L'adresse n'est pas conforme");
     testForm(city, nameReg, 'cityErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
     testForm(email, emailReg, 'emailErrorMsg', "L'adresse mail n'est pas conforme");
 
+
+    //Envoi de la commande
     validBtn.addEventListener("click", (event) => {
       let cart = getCart();
-      if (!nameReg.test(firstName.value) ||
-        !nameReg.test(lastName.value) ||
-        !addressReg.test(address.value) ||
-        !nameReg.test(city.value) ||
-        cart.length == 0) {
+      //Si panier vide on bloque
+      if (cart.length == 0) {
         event.preventDefault();
-        alert('Les champs du formulaire sont incorrects ou votre panier est vide')
+        alert('Votre panier est vide')
       }
-
+      //Si message d'erreur au formulaire on bloque
+      else if (document.getElementById('firstNameErrorMsg').textContent !== "" ||
+        document.getElementById('lastNameErrorMsg').textContent !== "" ||
+        document.getElementById('addressErrorMsg').textContent !== "" ||
+        document.getElementById('cityErrorMsg').textContent !== "" ||
+        document.getElementById('emailErrorMsg').textContent !== "") {
+        event.preventDefault();
+      }
+      //Si tout est ok on avance
       else {
+        //On enregistre les données à envoyer à l'API
         let cartConfirm = [];
         for (p of cart) {
           cartConfirm.push(p._id);
-          console.log(p._id)
         }
         let order = {
           //données form
@@ -146,7 +176,7 @@ fetch('http://localhost:3000/api/products')
           //données panier
           products: cartConfirm
         }
-        console.log(order)
+        //On envoie nos infos à l'API
         fetch('http://localhost:3000/api/products/order', {
           method: 'POST',
           body: JSON.stringify(order),
@@ -157,19 +187,10 @@ fetch('http://localhost:3000/api/products')
         })
           .then((response) => response.json())
           .then((data) => {
+            //On enregistre l'orderId et on le met dans le lien
             let orderId = data.orderId
             window.location.href = "confirmation.html" + "?orderId=" + orderId
           })
       }
     })
   })
-
-
-
-
-
-
-
-
-
-
