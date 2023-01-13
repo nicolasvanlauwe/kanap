@@ -134,11 +134,11 @@ fetch('http://localhost:3000/api/products')
     let addressReg = new RegExp(/^[0-9 A-Za-z'-]{1,40}$/);
     let emailReg = new RegExp(/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-z]{2,3})$/);
 
-    testForm(firstName, nameReg, 'firstNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
-    testForm(lastName, nameReg, 'lastNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
-    testForm(address, addressReg, 'addressErrorMsg', "L'adresse n'est pas conforme");
-    testForm(city, nameReg, 'cityErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux");
-    testForm(email, emailReg, 'emailErrorMsg', "L'adresse mail n'est pas conforme");
+    testForm(firstName, nameReg, 'firstNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux et le champ ne peut pas être vide");
+    testForm(lastName, nameReg, 'lastNameErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux et le champ ne peut pas être vide");
+    testForm(address, addressReg, 'addressErrorMsg', "L'adresse n'est pas conforme et le champ ne peut pas être vide");
+    testForm(city, nameReg, 'cityErrorMsg', "Vous ne pouvez pas utilisez de caractères spéciaux et le champ ne peut pas être vide");
+    testForm(email, emailReg, 'emailErrorMsg', "L'adresse mail n'est pas conforme et le champ ne peut pas être vide");
 
 
     //Envoi de la commande
@@ -156,6 +156,15 @@ fetch('http://localhost:3000/api/products')
         document.getElementById('cityErrorMsg').textContent !== "" ||
         document.getElementById('emailErrorMsg').textContent !== "") {
         event.preventDefault();
+      }
+      //Si champ vide on le signale et on bloque
+      else if (document.getElementById('firstName').value == "" ||
+        document.getElementById('lastName').value == "" ||
+        document.getElementById('address').value == "" ||
+        document.getElementById('city').value == "" ||
+        document.getElementById('email').value == "") {
+        event.preventDefault();
+        alert("Les champs ne peuvent pas être vides.")
       }
       //Si tout est ok on avance
       else {
