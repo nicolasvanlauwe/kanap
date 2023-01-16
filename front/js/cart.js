@@ -58,7 +58,7 @@ fetch('http://localhost:3000/api/products')
     </div>
   </article>`
       //Incrémentation de mon total pour le prix et pour la quantité
-      totQuantity += p.quantity;
+      totQuantity += parseInt(p.quantity);
       totPrice += price * p.quantity;
     }
     //On affiche après la boucle les totaux
